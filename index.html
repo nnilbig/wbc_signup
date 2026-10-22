@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050505">
+<title>WHONEXT B.C. 預約平台</title>
+<meta property="og:title" content="WHONEXT B.C. 預約平台">
+<meta property="og:description" content="臨打報名、取消、候補">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='9' fill='%23ffb000'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050505;
+    --card: #111111;
+    --cell: #000000;
+    --fill: #161616;
+    --line: #222222;
+    --ink: #f2f2f2;
+    --mute: #9a9aa0;
+    --dim: #55555a;
+    --amber: #ffb000;
+    --glow: 0 0 2px rgba(255, 176, 0, .9), 0 0 10px rgba(255, 176, 0, .55), 0 0 22px rgba(255, 176, 0, .25);
+    --bebas: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wrap {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 0 16px calc(40px + env(safe-area-inset-bottom));
+  }
+  button, input { font: inherit; }
+
+  /* 標題 */
+  .hero { padding: calc(36px + env(safe-area-inset-top)) 4px 22px; }
+  .brand {
+    margin: 0;
+    font: 400 48px/0.9 var(--bebas);
+    letter-spacing: .02em;
+    color: var(--amber);
+    text-shadow: var(--glow);
+  }
+  .sub { margin: 8px 0 0; font-size: 15px; color: var(--mute); letter-spacing: .2em; }
+
+  /* 卡片 */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+  .head { padding: 18px 18px 18px; cursor: pointer; outline: none; }
+  .head:focus-visible { box-shadow: inset 0 0 0 2px rgba(255, 176, 0, .5); border-radius: 22px; }
+  .row1 { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .when {
+    font: 400 30px/1 var(--bebas);
+    letter-spacing: .02em;
+    color: var(--amber);
+    text-shadow: var(--glow);
+    white-space: nowrap;
+  }
+  .tag {
+    flex: none;
+    font: 400 15px/1 var(--bebas);
+    letter-spacing: .1em;
+    padding: 6px 11px 4px;
+    border-radius: 999px;
+    border: 1px solid;
+  }
+  .tag.open { color: var(--amber); border-color: rgba(255, 176, 0, .45); text-shadow: 0 0 8px rgba(255, 176, 0, .5); }
+  .tag.full { color: var(--mute); border-color: #333; }
+  .place { margin-top: 7px; font-size: 14px; color: var(--mute); }
+
+  /* 計分看板 */
+  .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
+  .cell {
+    background: var(--cell);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 8px 4px 6px;
+    text-align: center;
+  }
+  .lbl { font-size: 12px; color: var(--mute); letter-spacing: .1em; }
+  .num {
+    margin-top: 3px;
+    font: 400 32px/1 var(--bebas);
+    color: var(--amber);
+    text-shadow: var(--glow);
+  }
+  .num small { font-size: 20px; opacity: .55; text-shadow: none; }
+  .cell.off .num { color: var(--dim); text-shadow: none; }
+  .cell.off .num small { opacity: 1; }
+
+  /* 燈號 */
+  .lights { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: #262626; }
+  .dot.on { background: var(--amber); box-shadow: 0 0 6px rgba(255, 176, 0, .8); }
+  .dot.sep { background: none; width: 6px; }
+  .dot.w { background: none; border: 1.5px solid var(--dim); }
+  .dot.w.on { background: rgba(255, 176, 0, .4); border-color: rgba(255, 176, 0, .6); box-shadow: 0 0 4px rgba(255, 176, 0, .35); }
+
+  /* 展開 */
+  .body { display: none; padding: 16px 18px 20px; border-top: 1px solid var(--line); }
+  .card.open .body { display: block; }
+  .name {
+    width: 100%;
+    background: var(--fill);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 16px;
+    font-size: 17px;
+    color: var(--ink);
+    outline: none;
+    -webkit-appearance: none;
+  }
+  .name::placeholder { color: var(--dim); }
+  .name:focus { border-color: rgba(255, 176, 0, .5); }
+  .btns { display: grid; grid-template-columns: 1.4fr 1fr; gap: 10px; margin-top: 10px; }
+  .btn {
+    height: 50px;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .15s, border-color .15s, color .15s;
+  }
+  .btn:active:not(:disabled) { opacity: .75; }
+  .btn:disabled { cursor: default; }
+  .btn.primary { background: var(--amber); color: #000; border: 0; box-shadow: 0 0 16px rgba(255, 176, 0, .25); }
+  .btn.primary:disabled { background: #222; color: var(--dim); box-shadow: none; }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1px solid #333; }
+  .btn.ghost.arm { color: var(--amber); border-color: var(--amber); }
+  .btn.ghost:disabled { color: var(--dim); }
+
+  /* 送出中：被按的按鈕保持原色，後面三顆 LED 輪流亮 */
+  .btn.primary.loading:disabled { background: var(--amber); color: #000; box-shadow: 0 0 16px rgba(255, 176, 0, .25); }
+  .btn.ghost.loading:disabled { color: var(--amber); border-color: var(--amber); }
+  .ld { display: inline-flex; gap: 4px; margin-left: 8px; vertical-align: middle; }
+  .ld i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; animation: led 1s infinite; }
+  .ld i:nth-child(2) { animation-delay: .15s; }
+  .ld i:nth-child(3) { animation-delay: .3s; }
+  @keyframes led { 0%, 60%, 100% { opacity: .25; } 30% { opacity: 1; } }
+
+  /* 名單 */
+  .sec { display: flex; justify-content: space-between; margin: 22px 0 4px; font-size: 13px; color: var(--mute); letter-spacing: .1em; }
+  .sec b { font: 400 16px/1 var(--bebas); letter-spacing: .05em; font-weight: 400; }
+  .roster { list-style: none; margin: 0; padding: 0; }
+  .roster li {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    padding: 10px 2px;
+    border-bottom: 1px solid var(--line);
+    cursor: pointer;
+  }
+  .roster li:last-child { border-bottom: 0; }
+  .roster .no { flex: none; width: 24px; font: 400 20px/1 var(--bebas); color: var(--mute); }
+  .roster .who { font-size: 16px; word-break: break-all; }
+  .roster.wait .no { color: var(--dim); }
+  .roster.wait .who { color: var(--mute); }
+  .roster li.none { cursor: default; color: var(--dim); }
+
+  /* 其他 */
+  .state { padding: 60px 0; text-align: center; color: var(--mute); }
+  .state.loading { font: 400 28px/1 var(--bebas); letter-spacing: .15em; color: var(--dim); animation: blink 1.2s infinite; }
+  @keyframes blink { 50% { opacity: .35; } }
+
+  .toast {
+    position: fixed;
+    top: calc(14px + env(safe-area-inset-top));
+    left: 50%;
+    z-index: 10;
+    max-width: calc(100% - 32px);
+    padding: 12px 20px;
+    border-radius: 999px;
+    background: #000;
+    border: 1px solid #2a2a2a;
+    color: var(--ink);
+    font-size: 15px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, .6);
+    transform: translate(-50%, calc(-100% - 40px));
+    transition: transform .3s cubic-bezier(.2, .8, .2, 1);
+    pointer-events: none;
+  }
+  .toast.show { transform: translate(-50%, 0); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <h1 class="brand">WHONEXT B.C.</h1>
+    <p class="sub">預約平台</p>
+  </header>
+  <main id="list"><div class="state loading">LOADING</div></main>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+  // GAS 部署後的 /exec 網址（部署 → 管理部署作業 → 網頁應用程式網址）
+  var API = 'https://script.google.com/macros/s/AKfycbwDQOxRFRnl2c3oWy-tWP_ULhjGom4FU2NQnp2zpf3_xBYrVp-Myy2NuTjcJh_zgQoz/exec';
+
+  var NAME_KEY = 'whonext_name';
+  var state = { sessions: null, open: null, name: loadName(), busy: false, pending: null, armed: null };
+  var armTimer = null;
+  var toastTimer = null;
+  var list = document.getElementById('list');
+
+  /* ---------- 資料 ---------- */
+
+  // GET 讀場次；POST 用 text/plain 送 JSON，避開 CORS 預檢（GAS 不處理 OPTIONS）
+  function api(body) {
+    var req = body
+      ? fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) })
+      : fetch(API, { cache: 'no-store' });
+    return req
+      .then(function (r) { return r.json(); })
+      .catch(function () { throw new Error('連線失敗，請稍後再試'); })
+      .then(function (res) {
+        if (!res.ok) throw new Error(res.error);
+        return res.data;
+      });
+  }
+
+  function load() {
+    api()
+      .then(function (sessions) { state.sessions = sessions; render(); })
+      .catch(function (err) {
+        if (!state.sessions) list.innerHTML = '<div class="state">載入失敗，請重新整理</div>';
+        toast(err.message);
+      });
+  }
+
+  function call(fn, sid) {
+    var name = state.name.trim();
+    if (!name) { toast('請先輸入姓名'); focusName(); return; }
+    disarm();
+    setBusy(fn);
+    api({ action: fn, sid: sid, name: name })
+      .then(function (res) {
+        state.sessions = res.sessions;
+        setBusy(null);
+        toast(res.msg);
+      })
+      .catch(function (err) {
+        setBusy(null);
+        toast(err.message);
+        load();
+      });
+  }
+
+  /* ---------- 畫面 ---------- */
+
+  function render() {
+    var sessions = state.sessions || [];
+    if (!sessions.some(function (s) { return s.sid === state.open; })) state.open = null;
+    if (!sessions.length) {
+      list.innerHTML = '<div class="state">目前沒有開放的場次</div>';
+      return;
+    }
+    var focused = document.activeElement && document.activeElement.classList.contains('name');
+    list.innerHTML = sessions.map(cardHtml).join('');
+    if (focused) focusName();
+  }
+
+  function cardHtml(s) {
+    var n = s.main.length, w = s.wait.length;
+    var left = Math.max(s.cap - n, 0);
+    var full = n >= s.cap, allFull = full && w >= s.wcap;
+    var open = state.open === s.sid;
+
+    var dots = '';
+    for (var i = 0; i < s.cap; i++) dots += '<i class="dot' + (i < n ? ' on' : '') + '"></i>';
+    if (s.wcap > 0) {
+      dots += '<i class="dot sep"></i>';
+      for (var j = 0; j < s.wcap; j++) dots += '<i class="dot w' + (j < w ? ' on' : '') + '"></i>';
+    }
+
+    var html =
+      '<section class="card' + (open ? ' open' : '') + '" data-sid="' + esc(s.sid) + '">' +
+        '<div class="head" data-toggle role="button" tabindex="0" aria-expanded="' + open + '">' +
+          '<div class="row1">' +
+            '<div class="when">' + esc(md(s.date)) + ' ' + esc(s.start) + '-' + esc(s.end) + '</div>' +
+            '<span class="tag ' + (full ? 'full">FULL' : 'open">OPEN') + '</span>' +
+          '</div>' +
+          '<div class="place">' + esc(s.place) + '</div>' +
+          '<div class="board">' +
+            cell('報名', n, s.cap, n === 0) +
+            cell('剩餘', left, null, left === 0) +
+            cell('候補', w, s.wcap, s.wcap === 0 || w === 0) +
+          '</div>' +
+          '<div class="lights" aria-label="正取 ' + n + '/' + s.cap + '，候補 ' + w + '/' + s.wcap + '">' + dots + '</div>' +
+        '</div>';
+
+    if (open) {
+      html +=
+        '<div class="body">' +
+          '<input class="name" type="text" maxlength="20" autocomplete="nickname" enterkeyhint="done" placeholder="輸入姓名" value="' + esc(state.name) + '">' +
+          '<div class="btns">' +
+            '<button class="btn primary' + (state.pending === 'signUp' ? ' loading' : '') + '" data-act="signUp"' + (allFull || state.busy ? ' disabled' : '') + '>' +
+              (state.pending === 'signUp' ? loading('送出中') : allFull ? '已額滿' : full ? '排候補' : '確認報名') + '</button>' +
+            '<button class="btn ghost' + (state.pending === 'cancel' ? ' loading' : '') + '" data-act="cancel"' + (state.busy ? ' disabled' : '') + '>' +
+              (state.pending === 'cancel' ? loading('取消中') : '取消報名') + '</button>' +
+          '</div>' +
+          roster('報名名單', s.main, n + '/' + s.cap, '') +
+          (s.wcap > 0 ? roster('候補名單', s.wait, w + '/' + s.wcap, ' wait') : '') +
+        '</div>';
+    }
+    return html + '</section>';
+  }
+
+  function cell(label, value, of, off) {
+    return '<div class="cell' + (off ? ' off' : '') + '"><div class="lbl">' + label + '</div>' +
+      '<div class="num">' + value + (of !== null ? '<small>/' + of + '</small>' : '') + '</div></div>';
+  }
+
+  function roster(title, names, count, cls) {
+    var items = names.length
+      ? names.map(function (nm, i) {
+          return '<li data-pick="' + esc(nm) + '"><span class="no">' + (i < 9 ? '0' : '') + (i + 1) + '</span>' +
+            '<span class="who">' + esc(nm) + '</span></li>';
+        }).join('')
+      : '<li class="none">—</li>';
+    return '<div class="sec"><span>' + title + '</span><b>' + count + '</b></div>' +
+      '<ol class="roster' + cls + '">' + items + '</ol>';
+  }
+
+  function loading(label) {
+    return label + '<span class="ld"><i></i><i></i><i></i></span>';
+  }
+
+  function setBusy(fn) {
+    state.busy = !!fn;
+    state.pending = fn || null;
+    render();
+  }
+
+  /* ---------- 互動 ---------- */
+
+  list.addEventListener('click', function (e) {
+    var card = e.target.closest('.card');
+    if (!card) return;
+    var sid = card.getAttribute('data-sid');
+
+    if (e.target.closest('[data-toggle]')) return toggle(sid);
+
+    var pick = e.target.closest('[data-pick]');
+    if (pick) {
+      setName(pick.getAttribute('data-pick'));
+      var input = card.querySelector('.name');
+      if (input) input.value = state.name;
+      return;
+    }
+
+    var btn = e.target.closest('button[data-act]');
+    if (!btn || btn.disabled || state.busy) return;
+    var act = btn.getAttribute('data-act');
+    if (act === 'signUp') return call('signUp', sid);
+    if (act === 'cancel') {
+      if (state.armed === sid) return call('cancel', sid);
+      arm(btn, sid);
+    }
+  });
+
+  list.addEventListener('keydown', function (e) {
+    if (e.target.hasAttribute('data-toggle') && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      toggle(e.target.closest('.card').getAttribute('data-sid'));
+    }
+    if (e.target.classList.contains('name') && e.key === 'Enter') e.target.blur();
+  });
+
+  list.addEventListener('input', function (e) {
+    if (e.target.classList.contains('name')) setName(e.target.value);
+  });
+
+  function toggle(sid) {
+    disarm();
+    state.open = state.open === sid ? null : sid;
+    render();
+  }
+
+  // 取消防誤觸：按一次變「再按一次確認」，3 秒內再按才執行
+  function arm(btn, sid) {
+    disarm();
+    state.armed = sid;
+    btn.classList.add('arm');
+    btn.textContent = '再按一次確認';
+    armTimer = setTimeout(function () {
+      state.armed = null;
+      btn.classList.remove('arm');
+      btn.textContent = '取消報名';
+    }, 3000);
+  }
+
+  function disarm() {
+    clearTimeout(armTimer);
+    state.armed = null;
+    var btn = list.querySelector('.btn.arm');
+    if (btn) { btn.classList.remove('arm'); btn.textContent = '取消報名'; }
+  }
+
+  function toast(msg) {
+    var el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove('show'); }, 2600);
+  }
+
+  /* ---------- 小工具 ---------- */
+
+  function setName(v) {
+    state.name = v;
+    try { localStorage.setItem(NAME_KEY, v); } catch (e) {}
+  }
+
+  function loadName() {
+    try { return localStorage.getItem(NAME_KEY) || ''; } catch (e) { return ''; }
+  }
+
+  function focusName() {
+    var input = list.querySelector('.card.open .name');
+    if (input) input.focus();
+  }
+
+  // 2026/10/31 → 10/31
+  function md(d) {
+    var p = String(d).split(/[\/\-.]/);
+    if (p.length < 3) return d;
+    return ('0' + parseInt(p[1], 10)).slice(-2) + '/' + ('0' + parseInt(p[2], 10)).slice(-2);
+  }
+
+  function esc(v) {
+    return String(v).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible' && !state.busy) load();
+  });
+
+  load();
+</script>
+</body>
+</html>
