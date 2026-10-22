@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#050505">
-<title>WHONEXT B.C.</title>
-<meta property="og:title" content="WHONEXT B.C.">
+<title>WHONEXT B.C. 預約平台</title>
+<meta property="og:title" content="WHONEXT B.C. 預約平台">
 <meta property="og:description" content="臨打報名、取消、候補">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='9' fill='%23ffb000'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,6 +49,13 @@
     color: var(--amber);
     text-shadow: var(--glow);
   }
+  .sub { margin: 8px 0 0; font-size: 15px; color: var(--mute); letter-spacing: .2em; }
+
+  /* 說明 */
+  .info { padding: 16px 18px; }
+  .info h2, .title { margin: 0 0 8px; font-size: 16px; font-weight: 600; letter-spacing: .1em; color: var(--amber); }
+  .info ol { margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.7; color: var(--mute); }
+  .title { margin: 26px 4px 12px; }
 
   /* 卡片 */
   .card {
@@ -197,7 +204,18 @@
 <div class="wrap">
   <header class="hero">
     <h1 class="brand">WHONEXT B.C.</h1>
+    <p class="sub">預約平台</p>
   </header>
+  <section class="card info">
+    <h2>預約注意事項</h2>
+    <ol>
+      <li>點預約場次展開，輸入姓名後按「確認報名」</li>
+      <li>報名額滿會自動排入候補</li>
+      <li>有人取消時，最早的候補自動遞補，並且於群組通知</li>
+      <li>「取消報名」可以點名單上的名字可直接帶入姓名，請確認姓名正確</li>
+    </ol>
+  </section>
+  <h2 class="title">選擇報名場次</h2>
   <main id="list"><div class="state loading">LOADING</div></main>
 </div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
