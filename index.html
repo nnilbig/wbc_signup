@@ -7,7 +7,7 @@
 <title>WHONEXT B.C. 預約平台</title>
 <meta property="og:title" content="WHONEXT B.C. 預約平台">
 <meta property="og:description" content="臨打報名、取消、候補">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='9' fill='%23ffb000'/></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='9' fill='%23f4f8ff'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
@@ -21,14 +21,26 @@
     --ink: #f2f2f2;
     --mute: #9a9aa0;
     --dim: #55555a;
-    --amber: #ffb000;
-    --glow: 0 0 2px rgba(255, 176, 0, .9), 0 0 10px rgba(255, 176, 0, .55), 0 0 22px rgba(255, 176, 0, .25);
+    --led: #f4f8ff;
+    --glow: 0 0 2px rgba(210, 228, 255, .9), 0 0 10px rgba(210, 228, 255, .55), 0 0 22px rgba(210, 228, 255, .25);
     --bebas: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif;
     --sans: -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  /* 雜訊黑：SVG 噪點疊在黑底上，固定不隨捲動 */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: .14;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
   body {
+    position: relative;
+    z-index: 0;
     font-family: var(--sans);
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
@@ -46,14 +58,14 @@
     margin: 0;
     font: 400 48px/0.9 var(--bebas);
     letter-spacing: .02em;
-    color: var(--amber);
+    color: var(--led);
     text-shadow: var(--glow);
   }
   .sub { margin: 8px 0 0; font-size: 15px; color: var(--mute); letter-spacing: .2em; }
 
   /* 說明 */
   .info { padding: 16px 18px; }
-  .info h2, .title { margin: 0 0 8px; font-size: 16px; font-weight: 600; letter-spacing: .1em; color: var(--amber); }
+  .info h2, .title { margin: 0 0 8px; font-size: 16px; font-weight: 600; letter-spacing: .1em; color: var(--led); }
   .info ol { margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.7; color: var(--mute); }
   .title { margin: 26px 4px 12px; }
 
@@ -66,12 +78,12 @@
     overflow: hidden;
   }
   .head { padding: 18px 18px 18px; cursor: pointer; outline: none; }
-  .head:focus-visible { box-shadow: inset 0 0 0 2px rgba(255, 176, 0, .5); border-radius: 22px; }
+  .head:focus-visible { box-shadow: inset 0 0 0 2px rgba(210, 228, 255, .5); border-radius: 22px; }
   .row1 { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .when {
     font: 400 30px/1 var(--bebas);
     letter-spacing: .02em;
-    color: var(--amber);
+    color: var(--led);
     text-shadow: var(--glow);
     white-space: nowrap;
   }
@@ -83,7 +95,7 @@
     border-radius: 999px;
     border: 1px solid;
   }
-  .tag.open { color: var(--amber); border-color: rgba(255, 176, 0, .45); text-shadow: 0 0 8px rgba(255, 176, 0, .5); }
+  .tag.open { color: var(--led); border-color: rgba(210, 228, 255, .45); text-shadow: 0 0 8px rgba(210, 228, 255, .5); }
   .tag.full { color: var(--mute); border-color: #333; }
   .place { margin-top: 7px; font-size: 14px; color: var(--mute); }
 
@@ -100,7 +112,7 @@
   .num {
     margin-top: 3px;
     font: 400 32px/1 var(--bebas);
-    color: var(--amber);
+    color: var(--led);
     text-shadow: var(--glow);
   }
   .num small { font-size: 20px; opacity: .55; text-shadow: none; }
@@ -110,10 +122,10 @@
   /* 燈號 */
   .lights { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
   .dot { width: 10px; height: 10px; border-radius: 50%; background: #262626; }
-  .dot.on { background: var(--amber); box-shadow: 0 0 6px rgba(255, 176, 0, .8); }
+  .dot.on { background: var(--led); box-shadow: 0 0 6px rgba(210, 228, 255, .8); }
   .dot.sep { background: none; width: 6px; }
   .dot.w { background: none; border: 1.5px solid var(--dim); }
-  .dot.w.on { background: rgba(255, 176, 0, .4); border-color: rgba(255, 176, 0, .6); box-shadow: 0 0 4px rgba(255, 176, 0, .35); }
+  .dot.w.on { background: rgba(210, 228, 255, .4); border-color: rgba(210, 228, 255, .6); box-shadow: 0 0 4px rgba(210, 228, 255, .35); }
 
   /* 展開 */
   .body { display: none; padding: 16px 18px 20px; border-top: 1px solid var(--line); }
@@ -130,7 +142,7 @@
     -webkit-appearance: none;
   }
   .name::placeholder { color: var(--dim); }
-  .name:focus { border-color: rgba(255, 176, 0, .5); }
+  .name:focus { border-color: rgba(210, 228, 255, .5); }
   .btns { display: grid; grid-template-columns: 1.4fr 1fr; gap: 10px; margin-top: 10px; }
   .btn {
     height: 50px;
@@ -142,14 +154,14 @@
   }
   .btn:active:not(:disabled) { opacity: .75; }
   .btn:disabled { cursor: default; }
-  .btn.primary { background: var(--amber); color: #000; border: 0; box-shadow: 0 0 16px rgba(255, 176, 0, .25); }
+  .btn.primary { background: var(--led); color: #000; border: 0; box-shadow: 0 0 16px rgba(210, 228, 255, .25); }
   .btn.primary:disabled { background: #222; color: var(--dim); box-shadow: none; }
   .btn.ghost { background: transparent; color: var(--ink); border: 1px solid #333; }
   .btn.ghost:disabled { color: var(--dim); }
 
   /* 送出中：被按的按鈕保持原色，後面三顆 LED 輪流亮 */
-  .btn.primary.loading:disabled { background: var(--amber); color: #000; box-shadow: 0 0 16px rgba(255, 176, 0, .25); }
-  .btn.ghost.loading:disabled { color: var(--amber); border-color: var(--amber); }
+  .btn.primary.loading:disabled { background: var(--led); color: #000; box-shadow: 0 0 16px rgba(210, 228, 255, .25); }
+  .btn.ghost.loading:disabled { color: var(--led); border-color: var(--led); }
   .ld { display: inline-flex; gap: 4px; margin-left: 8px; vertical-align: middle; }
   .ld i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; animation: led 1s infinite; }
   .ld i:nth-child(2) { animation-delay: .15s; }
