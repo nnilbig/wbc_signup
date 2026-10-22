@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#050505">
-<title>WHONEXT B.C. 預約平台</title>
-<meta property="og:title" content="WHONEXT B.C. 預約平台">
+<title>WHONEXT B.C.</title>
+<meta property="og:title" content="WHONEXT B.C.">
 <meta property="og:description" content="臨打報名、取消、候補">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='9' fill='%23ffb000'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,7 +49,6 @@
     color: var(--amber);
     text-shadow: var(--glow);
   }
-  .sub { margin: 8px 0 0; font-size: 15px; color: var(--mute); letter-spacing: .2em; }
 
   /* 卡片 */
   .card {
@@ -139,7 +138,6 @@
   .btn.primary { background: var(--amber); color: #000; border: 0; box-shadow: 0 0 16px rgba(255, 176, 0, .25); }
   .btn.primary:disabled { background: #222; color: var(--dim); box-shadow: none; }
   .btn.ghost { background: transparent; color: var(--ink); border: 1px solid #333; }
-  .btn.ghost.arm { color: var(--amber); border-color: var(--amber); }
   .btn.ghost:disabled { color: var(--dim); }
 
   /* 送出中：被按的按鈕保持原色，後面三顆 LED 輪流亮 */
@@ -199,7 +197,6 @@
 <div class="wrap">
   <header class="hero">
     <h1 class="brand">WHONEXT B.C.</h1>
-    <p class="sub">預約平台</p>
   </header>
   <main id="list"><div class="state loading">LOADING</div></main>
 </div>
@@ -210,8 +207,7 @@
   var API = 'https://script.google.com/macros/s/AKfycbwDQOxRFRnl2c3oWy-tWP_ULhjGom4FU2NQnp2zpf3_xBYrVp-Myy2NuTjcJh_zgQoz/exec';
 
   var NAME_KEY = 'whonext_name';
-  var state = { sessions: null, open: null, name: loadName(), busy: false, pending: null, armed: null };
-  var armTimer = null;
+  var state = { sessions: null, open: null, name: loadName(), busy: false, pending: null };
   var toastTimer = null;
   var list = document.getElementById('list');
 
@@ -243,7 +239,6 @@
   function call(fn, sid) {
     var name = state.name.trim();
     if (!name) { toast('請先輸入姓名'); focusName(); return; }
-    disarm();
     setBusy(fn);
     api({ action: fn, sid: sid, name: name })
       .then(function (res) {
@@ -364,11 +359,7 @@
     var btn = e.target.closest('button[data-act]');
     if (!btn || btn.disabled || state.busy) return;
     var act = btn.getAttribute('data-act');
-    if (act === 'signUp') return call('signUp', sid);
-    if (act === 'cancel') {
-      if (state.armed === sid) return call('cancel', sid);
-      arm(btn, sid);
-    }
+    if (act === 'signUp' || act === 'cancel') call(act, sid);
   });
 
   list.addEventListener('keydown', function (e) {
@@ -384,29 +375,8 @@
   });
 
   function toggle(sid) {
-    disarm();
     state.open = state.open === sid ? null : sid;
     render();
-  }
-
-  // 取消防誤觸：按一次變「再按一次確認」，3 秒內再按才執行
-  function arm(btn, sid) {
-    disarm();
-    state.armed = sid;
-    btn.classList.add('arm');
-    btn.textContent = '再按一次確認';
-    armTimer = setTimeout(function () {
-      state.armed = null;
-      btn.classList.remove('arm');
-      btn.textContent = '取消報名';
-    }, 3000);
-  }
-
-  function disarm() {
-    clearTimeout(armTimer);
-    state.armed = null;
-    var btn = list.querySelector('.btn.arm');
-    if (btn) { btn.classList.remove('arm'); btn.textContent = '取消報名'; }
   }
 
   function toast(msg) {

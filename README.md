@@ -1,4 +1,4 @@
-# WHONEXT B.C. 預約平台
+# WHONEXT B.C.
 
 臨打報名頁。前端放 GitHub Pages，後端是 Google Apps Script（GAS）＋ Google 試算表。
 
