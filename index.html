@@ -237,8 +237,11 @@
   var API = 'https://script.google.com/macros/s/AKfycbwDQOxRFRnl2c3oWy-tWP_ULhjGom4FU2NQnp2zpf3_xBYrVp-Myy2NuTjcJh_zgQoz/exec';
 
   var NAME_KEY = 'whonext_name';
+  var CACHE_KEY = 'whonext_sessions';
+  var REFRESH_MS = 30000;
   var state = { sessions: null, open: null, name: loadName(), busy: false, pending: null };
   var toastTimer = null;
+  var seq = 0;
   var list = document.getElementById('list');
 
   /* ---------- 資料 ---------- */
@@ -257,22 +260,44 @@
       });
   }
 
-  function load() {
+  // silent：背景更新失敗時不跳提示，畫面保留舊資料
+  function load(silent) {
+    var my = ++seq;
     api()
-      .then(function (sessions) { state.sessions = sessions; render(); })
+      .then(function (sessions) {
+        if (my === seq) apply(sessions); // 期間有報名/取消，以較新的結果為準
+      })
       .catch(function (err) {
         if (!state.sessions) list.innerHTML = '<div class="state">載入失敗，請重新整理</div>';
-        toast(err.message);
+        if (!silent) toast(err.message);
       });
+  }
+
+  function apply(sessions) {
+    state.sessions = sessions;
+    saveCache(sessions);
+    // 正在輸入姓名時不重繪，避免手機鍵盤被收起；下次重繪會帶上新資料
+    if (document.activeElement && document.activeElement.classList.contains('name')) return;
+    render();
+  }
+
+  function saveCache(sessions) {
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify(sessions)); } catch (e) {}
+  }
+
+  function loadCache() {
+    try { return JSON.parse(localStorage.getItem(CACHE_KEY)); } catch (e) { return null; }
   }
 
   function call(fn, sid) {
     var name = state.name.trim();
     if (!name) { toast('請先輸入姓名'); focusName(); return; }
+    seq++;
     setBusy(fn);
     api({ action: fn, sid: sid, name: name })
       .then(function (res) {
         state.sessions = res.sessions;
+        saveCache(res.sessions);
         setBusy(null);
         toast(res.msg);
       })
@@ -447,10 +472,18 @@
   }
 
   document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'visible' && !state.busy) load();
+    if (document.visibilityState === 'visible' && !state.busy) load(true);
   });
 
-  load();
+  // 定時在背景更新；分頁不在前景時不打 API
+  setInterval(function () {
+    if (document.visibilityState === 'visible' && !state.busy) load(true);
+  }, REFRESH_MS);
+
+  // 先畫上次的資料，再到背景抓最新的
+  state.sessions = loadCache();
+  if (state.sessions) render();
+  load(!!state.sessions);
 </script>
 </body>
 </html>
