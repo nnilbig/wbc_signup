@@ -231,14 +231,15 @@ button, input { font: inherit; }
   margin-top: 4px;
   padding: 9px 14px;
   border-radius: 999px;
-  border: 1px solid #333;
+  border: 1px solid rgba(255, 204, 51, .55);
   background: transparent;
-  color: var(--ink);
+  color: var(--warn);
   font-size: 14px;
   white-space: nowrap;
   cursor: pointer;
 }
-.bell::before { content: ''; display: inline-block; width: 7px; height: 7px; margin-right: 7px; border-radius: 50%; background: #333; vertical-align: 1px; }
+/* 還沒開啟：黃色提醒；開啟後：白光 */
+.bell::before { content: ''; display: inline-block; width: 7px; height: 7px; margin-right: 7px; border-radius: 50%; background: var(--warn); box-shadow: 0 0 6px rgba(255, 204, 51, .7); vertical-align: 1px; }
 .bell.on { color: var(--led); border-color: rgba(210, 228, 255, .45); }
 .bell.on::before { background: var(--led); box-shadow: 0 0 6px rgba(210, 228, 255, .8); }
 .bell:disabled { color: var(--dim); }
