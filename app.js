@@ -454,8 +454,12 @@ function renderNight() {
 }
 
 // 節日背景：日期（月*100+日，含頭尾）落在區間內就換掉球場線條；網址加 ?theme=halloween 可預覽
+// 跨年的區間拆成兩筆（12/31、1/1）
 var THEMES = [
-  { id: 'halloween', from: 1025, to: 1031 }
+  { id: 'halloween', from: 1025, to: 1031 },
+  { id: 'xmas', from: 1220, to: 1226 },
+  { id: 'newyear', from: 1231, to: 1231 },
+  { id: 'newyear', from: 101, to: 101 }
 ];
 function renderTheme() {
   var d = new Date();
