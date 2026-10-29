@@ -65,11 +65,23 @@ button, input { font: inherit; }
 }
 .sub { margin: 8px 0 0; font-size: 15px; color: var(--mute); letter-spacing: .2em; }
 
-/* 說明 */
-.info { padding: 16px 18px; }
-.info h2, .title { margin: 0 0 8px; font-size: 16px; font-weight: 600; letter-spacing: .1em; color: var(--led); }
-.info ol { margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.7; color: var(--mute); }
-.title { margin: 26px 4px 12px; }
+/* 說明：預設收合，點標題展開 */
+.info summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  list-style: none;
+  cursor: pointer;
+  outline: none;
+}
+.info summary::-webkit-details-marker { display: none; }
+.info summary::after { content: '›'; font-size: 22px; line-height: 1; color: var(--mute); transition: transform .2s; }
+.info[open] summary::after { transform: rotate(90deg); }
+.info summary:focus-visible { box-shadow: inset 0 0 0 2px rgba(210, 228, 255, .5); border-radius: 22px; }
+.info summary, .title { font-size: 16px; font-weight: 600; letter-spacing: .1em; color: var(--led); }
+.info ol { margin: 0; padding: 0 18px 16px 38px; font-size: 14px; line-height: 1.7; color: var(--mute); }
+.title { margin: 22px 4px 12px; }
 
 /* 卡片 */
 .card {
