@@ -39,10 +39,25 @@
       <path d="M305 0V472M305 868V1340"/>
       <path d="M-30 670H640" stroke-dasharray="2 14" stroke-width="7"/>
     </g>
+    <!-- 節日主題：沿用同一組手繪濾鏡與座標，由 app.js 依日期切換 -->
+    <g id="theme-halloween">
+      <!-- 多面體南瓜：外框、兩側瓜稜、蒂頭 -->
+      <path d="M305 480L200 470 90 510 20 600 0 700 20 800 90 890 200 930 305 920 410 930 520 890 590 800 610 700 590 600 520 510 410 470Z"/>
+      <path d="M200 470L120 540 95 700 120 860 200 930M410 470L490 540 515 700 490 860 410 930"/>
+      <path d="M288 478L278 400 300 378 332 386 324 478M330 410L372 388 392 412"/>
+      <!-- 臉：三角眼、鼻、鋸齒嘴 -->
+      <path d="M180 640H260L220 570ZM350 640H430L390 570ZM288 700H322L305 670Z"/>
+      <path d="M160 750L200 795 240 765 272 808 305 775 338 808 370 765 410 795 450 750 420 835 305 860 190 835Z"/>
+      <!-- 地平線（同球網虛線）、月亮、蝙蝠 -->
+      <path d="M-30 990H640" stroke-dasharray="2 14" stroke-width="7"/>
+      <path d="M500 110A80 80 0 1 0 590 240 62 62 0 1 1 500 110Z"/>
+      <path d="M60 250l40-20 18 18 14-30 14 30 18-18 40 20-30 2-18 18-24-12-24 12-18-18Z"/>
+      <path d="M380 1160l32-16 14 14 11-24 11 24 14-14 32 16-24 2-14 14-19-10-19 10-14-14Z"/>
+    </g>
   </defs>
   <g transform="rotate(-7 305 670)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
-    <use href="#lines" filter="url(#rough1)" stroke-width="5"/>
-    <use href="#lines" filter="url(#rough2)" stroke-width="2" opacity=".6" transform="translate(4 -3)"/>
+    <use class="court-use" href="#lines" filter="url(#rough1)" stroke-width="5"/>
+    <use class="court-use" href="#lines" filter="url(#rough2)" stroke-width="2" opacity=".6" transform="translate(4 -3)"/>
   </g>
 </svg>
 <!-- 下拉重新整理的燈號（主畫面 App 才會用到） -->

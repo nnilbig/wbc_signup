@@ -453,9 +453,23 @@ function renderNight() {
   $('subText').classList.toggle('night', night);
 }
 
+// 節日背景：日期（月*100+日，含頭尾）落在區間內就換掉球場線條；網址加 ?theme=halloween 可預覽
+var THEMES = [
+  { id: 'halloween', from: 1025, to: 1031 }
+];
+function renderTheme() {
+  var d = new Date();
+  var md = (d.getMonth() + 1) * 100 + d.getDate();
+  var preview = new URLSearchParams(location.search).get('theme');
+  var t = THEMES.filter(function (t) { return preview ? t.id === preview : md >= t.from && md <= t.to; })[0];
+  var href = t ? '#theme-' + t.id : '#lines';
+  document.querySelectorAll('.court-use').forEach(function (u) { u.setAttribute('href', href); });
+}
+
 document.addEventListener('visibilitychange', function () {
   if (document.visibilityState !== 'visible') return;
   renderNight();
+  renderTheme();
   if (!state.busy) load(true);
 });
 
@@ -515,6 +529,7 @@ if (isStandalone) {
 $('envTag').hidden = CONFIG.env !== 'dev';
 document.querySelector('meta[name="apple-mobile-web-app-title"]').setAttribute('content', CONFIG.appName);
 renderNight();
+renderTheme();
 renderPush();
 renderGuide();
 refreshPush();
