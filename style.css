@@ -202,8 +202,16 @@ button, input { font: inherit; }
 
 /* 其他 */
 .state { padding: 60px 0; text-align: center; color: var(--mute); }
-.state.loading { font: 400 28px/1 var(--bebas); letter-spacing: .15em; color: var(--dim); animation: blink 1.2s infinite; }
-@keyframes blink { 50% { opacity: .35; } }
+.state.loading .leds { gap: 8px; }
+.state.loading .leds i { width: 10px; height: 10px; }
+
+/* 燈號：拉越多亮越多顆（.on），載入中輪流亮（.spin） */
+.leds { display: inline-flex; gap: 6px; }
+.leds i { width: 8px; height: 8px; border-radius: 50%; background: #333; }
+.leds i.on { background: var(--led); box-shadow: 0 0 6px rgba(210, 228, 255, .8); }
+.leds.spin i { background: var(--led); box-shadow: 0 0 6px rgba(210, 228, 255, .8); animation: led 1s infinite; }
+.leds.spin i:nth-child(2) { animation-delay: .15s; }
+.leds.spin i:nth-child(3) { animation-delay: .3s; }
 
 .toast {
   position: fixed;
@@ -283,5 +291,18 @@ button, input { font: inherit; }
   font-size: 24px;
   line-height: 1;
   cursor: pointer;
+}
+/* 下拉重新整理：主畫面 App 關掉原生回彈，改由頁面位移 */
+@media (display-mode: standalone) {
+  html, body { overscroll-behavior-y: none; }
+}
+.ptr {
+  position: fixed;
+  top: calc(32px + env(safe-area-inset-top));
+  left: 50%;
+  z-index: 9;
+  opacity: 0;
+  transform: translateX(-50%);
+  pointer-events: none;
 }
 [hidden] { display: none !important; }

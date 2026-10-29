@@ -45,6 +45,8 @@
     <use href="#lines" filter="url(#rough2)" stroke-width="2" opacity=".6" transform="translate(4 -3)"/>
   </g>
 </svg>
+<!-- 下拉重新整理的燈號（主畫面 App 才會用到） -->
+<div id="ptr" class="ptr leds" aria-hidden="true"><i></i><i></i><i></i></div>
 <div class="wrap">
   <header class="hero">
     <div>
@@ -73,7 +75,7 @@
     </ol>
   </details>
   <h2 class="title">選擇報名場次</h2>
-  <main id="list"><div class="state loading">LOADING</div></main>
+  <main id="list"><div class="state loading"><span class="leds spin" aria-label="載入中"><i></i><i></i><i></i></span></div></main>
 </div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 

@@ -27,16 +27,18 @@ function api(body) {
     });
 }
 
-// silent：背景更新失敗時不跳提示，畫面保留舊資料
+// silent：背景更新失敗時不跳提示，畫面保留舊資料；回傳是否成功
 function load(silent) {
   var my = ++seq;
-  api()
+  return api()
     .then(function (sessions) {
       if (my === seq) apply(sessions); // 期間有報名/取消，以較新的結果為準
+      return true;
     })
     .catch(function (err) {
       if (!state.sessions) list.innerHTML = '<div class="state">載入失敗，請重新整理</div>';
       if (!silent) toast(err.message);
+      return false;
     });
 }
 
@@ -425,6 +427,53 @@ document.addEventListener('visibilitychange', function () {
 setInterval(function () {
   if (document.visibilityState === 'visible' && !state.busy) load(true);
 }, REFRESH_MS);
+
+/* ---------- 下拉重新整理 ---------- */
+
+// 只在主畫面 App 啟用；瀏覽器有原生的下拉重新整理
+// 頁面跟著手指往下移，燈號在空出來的位置
+var PULL_PX = 100;
+var pull = { y0: null, d: 0, busy: false };
+var ptr = $('ptr');
+var wrap = document.querySelector('.wrap');
+
+function setPull(p, settle) {
+  wrap.style.transition = settle ? 'transform .25s' : '';
+  wrap.style.transform = p ? 'translateY(' + Math.round(p * 64) + 'px)' : '';
+  ptr.style.opacity = p;
+  [].forEach.call(ptr.querySelectorAll('i'), function (dot, i) {
+    dot.classList.toggle('on', p >= (i + 1) / 3);
+  });
+}
+
+if (navigator.standalone || matchMedia('(display-mode: standalone)').matches) {
+  document.addEventListener('touchstart', function (e) {
+    var typing = document.activeElement && document.activeElement.classList.contains('name');
+    var ok = window.scrollY <= 0 && e.touches.length === 1 && !state.busy && !pull.busy && !typing;
+    pull.y0 = ok ? e.touches[0].clientY : null;
+    pull.d = 0;
+  }, { passive: true });
+
+  document.addEventListener('touchmove', function (e) {
+    if (pull.y0 === null) return;
+    pull.d = Math.max(0, e.touches[0].clientY - pull.y0);
+    setPull(Math.min(pull.d / PULL_PX, 1));
+  }, { passive: true });
+
+  document.addEventListener('touchend', function () {
+    if (pull.y0 === null) return;
+    pull.y0 = null;
+    if (pull.d < PULL_PX) return setPull(0, true);
+    pull.busy = true;
+    ptr.classList.add('spin');
+    load(false).then(function (ok) {
+      pull.busy = false;
+      ptr.classList.remove('spin');
+      setPull(0, true);
+      if (ok) toast('已更新');
+    });
+  });
+}
 
 // 環境：測試版顯示 TEST；iPhone 主畫面名稱
 $('envTag').hidden = CONFIG.env !== 'dev';
