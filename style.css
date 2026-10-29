@@ -64,6 +64,7 @@ button, input { font: inherit; }
   text-shadow: var(--glow);
 }
 .sub { margin: 8px 0 0; font-size: 15px; color: var(--mute); letter-spacing: .2em; }
+.sub .night { color: var(--warn); letter-spacing: .1em; }
 
 /* 說明：預設收合，點標題展開 */
 .info summary {
@@ -131,6 +132,11 @@ button, input { font: inherit; }
 .num small { font-size: 20px; opacity: .55; text-shadow: none; }
 .cell.off .num { color: var(--dim); text-shadow: none; }
 .cell.off .num small { opacity: 1; }
+/* 搶到頭香／最後一位：看板對應的格子閃兩下 */
+.cell.flash { animation: flash-cell .5s 2; }
+.cell.flash .num { animation: flash-num .5s 2; }
+@keyframes flash-cell { 50% { border-color: var(--warn); box-shadow: 0 0 14px rgba(255, 204, 51, .45); } }
+@keyframes flash-num { 50% { color: var(--warn); text-shadow: 0 0 10px rgba(255, 204, 51, .8); } }
 
 /* 燈號 */
 .lights { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }

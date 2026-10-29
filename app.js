@@ -61,6 +61,7 @@ function loadCache() {
 function call(fn, sid) {
   var name = state.name.trim();
   if (!name) { toast('請先輸入姓名'); focusName(); return; }
+  var was = rank(sid, name); // 報名前就在正取名單裡，不算搶到
   seq++;
   setBusy(fn);
   api({ action: fn, sid: sid, name: name })
@@ -68,13 +69,38 @@ function call(fn, sid) {
       state.sessions = res.sessions;
       saveCache(res.sessions);
       setBusy(null);
-      toast(res.msg);
+      toast((fn === 'signUp' && was < 0 && prize(sid, name)) || res.msg);
     })
     .catch(function (err) {
       setBusy(null);
       toast(err.message);
       load();
     });
+}
+
+// 彩蛋：正取第一位是頭香，「報名」閃兩下；搶到最後一個名額，「剩餘 0」閃兩下
+function prize(sid, name) {
+  var i = rank(sid, name);
+  if (i < 0) return '';
+  if (i === session(sid).cap - 1) { flash(sid, 2); return '搶到最後一位！'; }
+  if (i === 0) { flash(sid, 1); return '搶到頭香！'; }
+  return '';
+}
+
+// 看板第 n 格（1 報名、2 剩餘、3 候補）
+function flash(sid, n) {
+  var cell = list.querySelector('.card[data-sid="' + CSS.escape(sid) + '"] .cell:nth-child(' + n + ')');
+  if (cell) cell.classList.add('flash');
+}
+
+function session(sid) {
+  return (state.sessions || []).filter(function (s) { return s.sid === sid; })[0];
+}
+
+// 在正取名單的第幾位（0 起算），不在是 -1；空白比照 GAS 合併
+function rank(sid, name) {
+  var s = session(sid);
+  return s ? s.main.indexOf(name.replace(/\s+/g, ' ')) : -1;
 }
 
 /* ---------- 畫面 ---------- */
@@ -419,8 +445,18 @@ function esc(v) {
   });
 }
 
+// 彩蛋：半夜 1～3 點打開，副標換成黃字
+function renderNight() {
+  var h = new Date().getHours();
+  var night = h >= 1 && h < 3;
+  $('subText').textContent = night ? '這麼晚了還不睡？' : '大平台';
+  $('subText').classList.toggle('night', night);
+}
+
 document.addEventListener('visibilitychange', function () {
-  if (document.visibilityState === 'visible' && !state.busy) load(true);
+  if (document.visibilityState !== 'visible') return;
+  renderNight();
+  if (!state.busy) load(true);
 });
 
 // 定時在背景更新；分頁不在前景時不打 API
@@ -446,7 +482,7 @@ function setPull(p, settle) {
   });
 }
 
-if (navigator.standalone || matchMedia('(display-mode: standalone)').matches) {
+if (isStandalone) {
   document.addEventListener('touchstart', function (e) {
     var typing = document.activeElement && document.activeElement.classList.contains('name');
     var ok = window.scrollY <= 0 && e.touches.length === 1 && !state.busy && !pull.busy && !typing;
@@ -478,6 +514,7 @@ if (navigator.standalone || matchMedia('(display-mode: standalone)').matches) {
 // 環境：測試版顯示 TEST；iPhone 主畫面名稱
 $('envTag').hidden = CONFIG.env !== 'dev';
 document.querySelector('meta[name="apple-mobile-web-app-title"]').setAttribute('content', CONFIG.appName);
+renderNight();
 renderPush();
 renderGuide();
 refreshPush();
