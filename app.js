@@ -449,7 +449,7 @@ function esc(v) {
 function renderNight() {
   var h = new Date().getHours();
   var night = h >= 1 && h < 3;
-  $('subText').textContent = night ? '這麼晚了還不睡？' : '大平台';
+  $('subText').textContent = night ? '還不睡？' : '';
   $('subText').classList.toggle('night', night);
 }
 

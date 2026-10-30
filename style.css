@@ -63,7 +63,7 @@ button, input { font: inherit; }
   color: var(--led);
   text-shadow: var(--glow);
 }
-.sub { margin: 8px 0 0; font-size: 15px; color: var(--mute); letter-spacing: .2em; }
+.sub { margin: 8px 0 0; min-height: 1.5em; font-size: 15px; line-height: 1.5; color: var(--mute); letter-spacing: .2em; }
 .sub .night { color: var(--warn); letter-spacing: .1em; }
 
 /* 說明：預設收合，點標題展開 */
